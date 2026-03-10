@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STORE | متجر</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #0f0f1a;
+    --bg3: #141420;
+    --card: #12121e;
+    --border: #1e1e35;
+    --accent: #5865F2;
+    --accent2: #7289da;
+    --gold: #f0b429;
+    --red: #ed4245;
+    --green: #57f287;
+    --text: #e8e8f0;
+    --muted: #6b6b8a;
+    --glow: rgba(88,101,242,0.3);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== BACKGROUND ===== */
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(88,101,242,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88,101,242,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+  .bg-glow {
+    position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+    width: 900px; height: 500px;
+    background: radial-gradient(ellipse, rgba(88,101,242,0.12) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ===== NAVBAR ===== */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 64px;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.5rem; font-weight: 700; letter-spacing: 3px;
+    color: var(--accent);
+    text-shadow: 0 0 20px var(--glow);
+    cursor: pointer;
+  }
+  .nav-links { display: flex; gap: 0.5rem; align-items: center; }
+  .nav-btn {
+    background: none; border: none; color: var(--muted);
+    font-family: 'Tajawal', sans-serif; font-size: 0.9rem;
+    padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer;
+    transition: all 0.2s; position: relative;
+  }
+  .nav-btn:hover, .nav-btn.active { color: var(--text); background: var(--bg3); }
+  .nav-btn.active::after {
+    content: ''; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%);
+    width: 60%; height: 2px; background: var(--accent); border-radius: 2px;
+  }
+  .login-btn {
+    background: var(--accent); color: #fff; border: none;
+    padding: 0.5rem 1.2rem; border-radius: 8px; cursor: pointer;
+    font-family: 'Tajawal', sans-serif; font-size: 0.9rem; font-weight: 600;
+    display: flex; align-items: center; gap: 0.5rem;
+    transition: all 0.2s; box-shadow: 0 0 15px rgba(88,101,242,0.3);
+  }
+  .login-btn:hover { background: #6875f5; transform: translateY(-1px); box-shadow: 0 0 25px rgba(88,101,242,0.5); }
+  .user-badge {
+    display: flex; align-items: center; gap: 0.6rem;
+    background: var(--bg3); border: 1px solid var(--border);
+    padding: 0.4rem 1rem; border-radius: 8px;
+  }
+  .user-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2px solid var(--accent); object-fit: cover;
+  }
+  .user-name { font-size: 0.85rem; font-weight: 600; }
+
+  /* ===== PAGES ===== */
+  .page { display: none; padding-top: 80px; min-height: 100vh; position: relative; z-index: 1; }
+  .page.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+
+  /* ===== HERO ===== */
+  .hero {
+    padding: 4rem 2rem 3rem;
+    text-align: center; max-width: 900px; margin: 0 auto;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: rgba(88,101,242,0.1); border: 1px solid rgba(88,101,242,0.3);
+    padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.8rem;
+    color: var(--accent2); margin-bottom: 1.5rem;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(88,101,242,0.2)} 50%{box-shadow:0 0 0 8px rgba(88,101,242,0)} }
+  .dot { width:8px; height:8px; border-radius:50%; background: var(--green); animation: blink 1.5s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .hero h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 700; line-height: 1.1;
+    letter-spacing: 2px;
+  }
+  .hero h1 span { color: var(--accent); text-shadow: 0 0 30px var(--glow); }
+  .hero p { color: var(--muted); font-size: 1.1rem; margin: 1rem 0 2rem; }
+
+  .hero-stats {
+    display: flex; justify-content: center; gap: 3rem; margin: 2rem 0;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Rajdhani', sans-serif; font-size: 2rem; font-weight: 700; color: var(--accent); }
+  .stat-label { font-size: 0.8rem; color: var(--muted); }
+
+  /* ===== PRODUCTS GRID ===== */
+  .section { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+  .section-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.6rem; font-weight: 700; margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .section-title::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  .products-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.2rem;
+  }
+
+  .product-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+    transition: all 0.3s; cursor: pointer; position: relative;
+  }
+  .product-card:hover {
+    border-color: var(--accent); transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(88,101,242,0.2);
+  }
+  .product-img {
+    width: 100%; height: 160px; object-fit: cover;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem; position: relative; overflow: hidden;
+  }
+  .product-img::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 60%, var(--card));
+  }
+  .product-badge {
+    position: absolute; top: 10px; right: 10px;
+    padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700;
+    z-index: 1;
+  }
+  .badge-new { background: var(--green); color: #000; }
+  .badge-hot { background: var(--red); color: #fff; }
+  .badge-sale { background: var(--gold); color: #000; }
+
+  .product-body { padding: 1.2rem; }
+  .product-name { font-weight: 700; font-size: 1rem; margin-bottom: 0.3rem; }
+  .product-desc { color: var(--muted); font-size: 0.83rem; margin-bottom: 1rem; line-height: 1.5; }
+  .product-footer { display: flex; justify-content: space-between; align-items: center; }
+  .product-price { font-family: 'Rajdhani', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--gold); }
+  .product-price span { font-size: 0.8rem; color: var(--muted); }
+  .buy-btn {
+    background: var(--accent); color: #fff; border: none;
+    padding: 0.5rem 1.2rem; border-radius: 7px; cursor: pointer;
+    font-family: 'Tajawal', sans-serif; font-size: 0.85rem; font-weight: 600;
+    transition: all 0.2s;
+  }
+  .buy-btn:hover { background: #6875f5; transform: scale(1.05); }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center;
+    padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+  .modal {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 16px; padding: 2rem; max-width: 500px; width: 100%;
+    max-height: 85vh; overflow-y: auto; position: relative;
+  }
+  .modal-close {
+    position: absolute; top: 1rem; left: 1rem;
+    background: var(--bg3); border: none; color: var(--muted);
+    width: 32px; height: 32px; border-radius: 6px; cursor: pointer;
+    font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { color: var(--text); background: var(--border); }
+  .modal-title { font-family: 'Rajdhani', sans-serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; }
+
+  /* ===== PAYMENT METHODS ===== */
+  .payment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin: 1rem 0; }
+  .payment-option {
+    background: var(--bg3); border: 2px solid var(--border);
+    border-radius: 10px; padding: 1rem; cursor: pointer;
+    text-align: center; transition: all 0.2s;
+  }
+  .payment-option:hover, .payment-option.selected {
+    border-color: var(--accent); background: rgba(88,101,242,0.1);
+  }
+  .payment-option .icon { font-size: 1.8rem; margin-bottom: 0.4rem; }
+  .payment-option .label { font-size: 0.85rem; font-weight: 600; }
+  .payment-option .sub { font-size: 0.75rem; color: var(--muted); }
+
+  /* ===== RULES PAGE ===== */
+  .rules-container { max-width: 750px; margin: 0 auto; padding: 2rem; }
+  .rule-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem;
+    border-right: 4px solid var(--accent);
+    transition: all 0.2s;
+  }
+  .rule-card:hover { transform: translateX(-4px); box-shadow: 4px 0 20px rgba(88,101,242,0.15); }
+  .rule-num {
+    font-family: 'Rajdhani', sans-serif; font-size: 2rem; font-weight: 700;
+    color: var(--accent); opacity: 0.3; float: right; line-height: 1;
+  }
+  .rule-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.5rem; color: var(--gold); }
+  .rule-text { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+  /* ===== PAYMENT PAGE ===== */
+  .payment-page { max-width: 850px; margin: 0 auto; padding: 2rem; }
+  .pay-methods-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem; margin-top: 1rem;
+  }
+  .pay-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.5rem; text-align: center;
+    transition: all 0.3s;
+  }
+  .pay-card:hover {
+    border-color: var(--accent); transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(88,101,242,0.15);
+  }
+  .pay-icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
+  .pay-name { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.3rem; }
+  .pay-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+  .pay-badge {
+    display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px;
+    font-size: 0.7rem; font-weight: 700; margin-top: 0.5rem;
+  }
+  .badge-fast { background: rgba(87,242,135,0.15); color: var(--green); border: 1px solid rgba(87,242,135,0.3); }
+  .badge-secure { background: rgba(88,101,242,0.15); color: var(--accent2); border: 1px solid rgba(88,101,242,0.3); }
+  .badge-popular { background: rgba(240,180,41,0.15); color: var(--gold); border: 1px solid rgba(240,180,41,0.3); }
+
+  /* ===== ADMIN PANEL ===== */
+  .admin-panel { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+  .admin-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 2rem; flex-wrap: gap;
+  }
+  .admin-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .admin-tab {
+    background: var(--bg3); border: 1px solid var(--border);
+    color: var(--muted); padding: 0.5rem 1.2rem; border-radius: 8px;
+    cursor: pointer; font-family: 'Tajawal', sans-serif; font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+  .admin-tab.active, .admin-tab:hover {
+    background: var(--accent); color: #fff; border-color: var(--accent);
+  }
+
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem; margin-bottom: 2rem;
+  }
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.2rem;
+  }
+  .stat-card .label { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.5rem; }
+  .stat-card .value { font-family: 'Rajdhani', sans-serif; font-size: 2rem; font-weight: 700; }
+  .stat-card .change { font-size: 0.75rem; margin-top: 0.3rem; }
+  .up { color: var(--green); } .down { color: var(--red); }
+
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th {
+    background: var(--bg3); padding: 0.8rem 1rem;
+    font-size: 0.8rem; color: var(--muted); text-align: right;
+    border-bottom: 1px solid var(--border);
+  }
+  .data-table td {
+    padding: 0.8rem 1rem; border-bottom: 1px solid rgba(30,30,53,0.5);
+    font-size: 0.88rem; vertical-align: middle;
+  }
+  .data-table tr:hover td { background: rgba(88,101,242,0.03); }
+  .status-badge {
+    padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700;
+  }
+  .s-done { background: rgba(87,242,135,0.15); color: var(--green); }
+  .s-pending { background: rgba(240,180,41,0.15); color: var(--gold); }
+  .s-cancel { background: rgba(237,66,69,0.15); color: var(--red); }
+
+  /* ===== WEBHOOK CONFIG ===== */
+  .webhook-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem;
+  }
+  .wh-title { font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+  .input-group { margin-bottom: 1rem; }
+  .input-label { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.4rem; display: block; }
+  .input-field {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.7rem 1rem; color: var(--text);
+    font-family: 'Tajawal', sans-serif; font-size: 0.9rem;
+    transition: border-color 0.2s; direction: ltr;
+  }
+  .input-field:focus { outline: none; border-color: var(--accent); }
+  .toggle-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.8rem 0; border-bottom: 1px solid rgba(30,30,53,0.5);
+  }
+  .toggle-row:last-child { border-bottom: none; }
+  .toggle-info .tl { font-size: 0.9rem; font-weight: 600; }
+  .toggle-info .ts { font-size: 0.8rem; color: var(--muted); }
+  .toggle {
+    width: 42px; height: 22px; background: var(--border); border-radius: 50px;
+    cursor: pointer; position: relative; transition: background 0.3s;
+  }
+  .toggle.on { background: var(--accent); }
+  .toggle::after {
+    content: ''; position: absolute; top: 3px; right: 3px;
+    width: 16px; height: 16px; background: #fff; border-radius: 50%;
+    transition: transform 0.3s;
+  }
+  .toggle.on::after { transform: translateX(-20px); }
+
+  .action-btn {
+    padding: 0.6rem 1.4rem; border-radius: 8px; cursor: pointer;
+    font-family: 'Tajawal', sans-serif; font-size: 0.9rem; font-weight: 600;
+    transition: all 0.2s; border: none;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #6875f5; }
+  .btn-danger { background: rgba(237,66,69,0.15); color: var(--red); border: 1px solid rgba(237,66,69,0.3); }
+  .btn-danger:hover { background: var(--red); color: #fff; }
+  .btn-success { background: rgba(87,242,135,0.15); color: var(--green); border: 1px solid rgba(87,242,135,0.3); }
+  .btn-success:hover { background: var(--green); color: #000; }
+
+  /* ===== PRODUCT MANAGEMENT ===== */
+  .product-form {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.5rem;
+  }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  /* ===== DISCORD LOGIN PAGE ===== */
+  .login-page {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 80vh;
+  }
+  .login-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 2.5rem; max-width: 420px; width: 100%;
+    text-align: center;
+  }
+  .login-logo {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 2.5rem; font-weight: 700; color: var(--accent);
+    text-shadow: 0 0 30px var(--glow); margin-bottom: 0.5rem;
+  }
+  .login-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .discord-login-btn {
+    display: flex; align-items: center; justify-content: center; gap: 0.8rem;
+    background: #5865F2; color: #fff; border: none;
+    padding: 1rem 2rem; border-radius: 12px; cursor: pointer;
+    font-family: 'Tajawal', sans-serif; font-size: 1rem; font-weight: 700;
+    width: 100%; transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(88,101,242,0.4);
+  }
+  .discord-login-btn:hover { background: #6875f5; transform: translateY(-2px); box-shadow: 0 8px 30px rgba(88,101,242,0.5); }
+  .discord-icon { width: 24px; height: 24px; }
+  .login-perks { margin: 1.5rem 0; text-align: right; }
+  .perk { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0; font-size: 0.88rem; color: var(--muted); }
+  .perk-icon { color: var(--green); }
+
+  /* ===== TOAST ===== */
+  .toast-container { position: fixed; bottom: 2rem; left: 2rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
+  .toast {
+    background: var(--bg2); border: 1px solid var(--border);
+    padding: 0.8rem 1.2rem; border-radius: 10px; font-size: 0.88rem;
+    display: flex; align-items: center; gap: 0.6rem;
+    animation: slideIn 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    max-width: 300px;
+  }
+  .toast.success { border-right: 3px solid var(--green); }
+  .toast.error { border-right: 3px solid var(--red); }
+  .toast.info { border-right: 3px solid var(--accent); }
+  @keyframes slideIn { from { transform: translateX(-20px); opacity:0; } to { transform: translateX(0); opacity:1; } }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    nav { padding: 0 1rem; }
+    .nav-links .nav-btn { display: none; }
+    .form-grid { grid-template-columns: 1fr; }
+    .payment-grid { grid-template-columns: 1fr; }
+  }
+
+  .empty-state { text-align: center; padding: 3rem; color: var(--muted); }
+  .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+  select.input-field { appearance: none; }
+  textarea.input-field { resize: vertical; min-height: 80px; }
+
+  .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+  .flex-gap { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+  .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+  .highlight-box {
+    background: rgba(88,101,242,0.08); border: 1px solid rgba(88,101,242,0.2);
+    border-radius: 10px; padding: 1rem; margin: 1rem 0;
+  }
+
+  .admin-access-gate {
+    text-align: center; padding: 3rem; 
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; max-width: 400px; margin: 2rem auto;
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-logo">◈ Real Town Store</div>
+  <div class="nav-links">
+    <button class="nav-btn active" onclick="showPage('home')">الرئيسية</button>
+    <button class="nav-btn" onclick="showPage('products')">المنتجات</button>
+    <button class="nav-btn" onclick="showPage('payment')">طرق الدفع</button>
+    <button class="nav-btn" onclick="showPage('rules')">القوانين</button>
+    <button class="nav-btn" id="adminNavBtn" onclick="showPage('admin')" style="display:none">⚙️ الإدارة</button>
+  </div>
+  <div id="authArea">
+    <button class="login-btn" onclick="showPage('login')">
+      <svg class="discord-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.082.11 18.105.127 18.12a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+      تسجيل الدخول بـ Discord
+    </button>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-badge"><div class="dot"></div> المتجر مفتوح الآن</div>
+    <h1>أفضل <span>منتجات</span><br>بأسعار لا تُقاوم</h1>
+    <p>تسوق بأمان وثقة • دعم 24/7 • تسليم فوري</p>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num" id="counter1">0</div>
+        <div class="stat-label">عميل سعيد</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="counter2">0</div>
+        <div class="stat-label">منتج متاح</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="counter3">0</div>
+        <div class="stat-label">طلب مكتمل</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔥 أحدث المنتجات</div>
+    <div class="products-grid" id="homeProductsGrid"></div>
+  </div>
+</div>
+
+<!-- PRODUCTS PAGE -->
+<div id="page-products" class="page">
+  <div class="section">
+    <div class="section-title">🛒 جميع المنتجات</div>
+    <div class="products-grid" id="allProductsGrid"></div>
+  </div>
+</div>
+
+<!-- PAYMENT PAGE -->
+<div id="page-payment" class="page">
+  <div class="payment-page">
+    <div class="section-title">💳 طرق الدفع المتاحة</div>
+    <p style="color:var(--muted);margin-bottom:1.5rem">نوفر أكثر من طريقة دفع لراحتك وأمانك</p>
+    <div class="pay-methods-grid" id="payMethodsGrid"></div>
+
+    <div class="divider"></div>
+    <div class="section-title" style="margin-top:1rem">ℹ️ تعليمات الدفع</div>
+    <div class="rule-card" style="border-right-color:var(--gold)">
+      <div class="rule-title">خطوات الشراء</div>
+      <div class="rule-text">
+        ١. اختر المنتج المطلوب من قائمة المنتجات<br>
+        ٢. اضغط "شراء الآن" واختر طريقة الدفع<br>
+        ٣. أكمل عملية الدفع عبر القناة المحددة<br>
+        ٤. ستصلك رسالة تأكيد فورية على Discord<br>
+        ٥. يتم تسليم المنتج خلال دقائق معدودة
+      </div>
+    </div>
+    <div class="rule-card" style="border-right-color:var(--red)">
+      <div class="rule-title">⚠️ تنبيهات مهمة</div>
+      <div class="rule-text">
+        • تحقق من البيانات قبل الإرسال<br>
+        • لا نقبل المبالغ المُرسلة بدون طلب مسبق<br>
+        • تواصل مع الدعم في حال وجود أي مشكلة<br>
+        • جميع المبالغ المحولة غير قابلة للاسترداد إلا بأسباب مشروعة
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RULES PAGE -->
+<div id="page-rules" class="page">
+  <div class="rules-container">
+    <div class="section-title">📋 قوانين المتجر</div>
+    <p style="color:var(--muted);margin-bottom:2rem">يرجى قراءة القوانين بعناية قبل الشراء. الاستمرار يعني موافقتك على جميع الشروط.</p>
+    <div id="rulesContainer"></div>
+  </div>
+</div>
+
+<!-- LOGIN PAGE -->
+<div id="page-login" class="page login-page">
+  <div class="login-card">
+    <div class="login-logo">◈ STORE</div>
+    <p class="login-sub">سجّل دخولك لتتمتع بجميع الميزات</p>
+    <div class="login-perks">
+      <div class="perk"><span class="perk-icon">✓</span> تتبع طلباتك بسهولة</div>
+      <div class="perk"><span class="perk-icon">✓</span> حفظ سلة التسوق</div>
+      <div class="perk"><span class="perk-icon">✓</span> استلام إشعارات فورية</div>
+      <div class="perk"><span class="perk-icon">✓</span> وصول لعروض حصرية</div>
+    </div>
+    <button class="discord-login-btn" onclick="loginWithDiscord()">
+      <svg class="discord-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.082.11 18.105.127 18.12a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+      تسجيل الدخول بـ Discord
+    </button>
+    <p style="color:var(--muted);font-size:0.78rem;margin-top:1rem">
+      بالضغط توافق على <a href="#" style="color:var(--accent)">الشروط والأحكام</a>
+    </p>
+  </div>
+</div>
+
+<!-- ADMIN PAGE -->
+<div id="page-admin" class="page">
+  <div class="admin-panel">
+    <div id="adminGate">
+      <div class="admin-access-gate">
+        <div style="font-size:3rem;margin-bottom:1rem">🔐</div>
+        <div style="font-weight:700;font-size:1.1rem;margin-bottom:0.5rem">لوحة الإدارة</div>
+        <div style="color:var(--muted);font-size:0.88rem;margin-bottom:1.5rem">يجب تسجيل الدخول للوصول</div>
+        <button class="action-btn btn-primary" onclick="showPage('login')">تسجيل الدخول</button>
+      </div>
+    </div>
+    <div id="adminContent" style="display:none">
+      <div class="flex-between" style="margin-bottom:1.5rem">
+        <div class="section-title" style="margin:0">⚙️ لوحة التحكم</div>
+        <div class="flex-gap">
+          <button class="action-btn btn-success" onclick="testWebhook()">🧪 اختبار Webhook</button>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="label">إجمالي الطلبات</div>
+          <div class="value" style="color:var(--accent)">142</div>
+          <div class="change up">↑ 12% هذا الشهر</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">الإيرادات</div>
+          <div class="value" style="color:var(--gold)">2,840</div>
+          <div class="change up">↑ 8% هذا الشهر</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">العملاء</div>
+          <div class="value" style="color:var(--green)">89</div>
+          <div class="change up">↑ 5 جدد</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">معلقة</div>
+          <div class="value" style="color:var(--gold)">7</div>
+          <div class="change">بانتظار المراجعة</div>
+        </div>
+      </div>
+
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchTab('orders')">الطلبات</button>
+        <button class="admin-tab" onclick="switchTab('products-mgmt')">المنتجات</button>
+        <button class="admin-tab" onclick="switchTab('webhook-config')">Webhook</button>
+        <button class="admin-tab" onclick="switchTab('rules-mgmt')">القوانين</button>
+        <button class="admin-tab" onclick="switchTab('payment-mgmt')">طرق الدفع</button>
+        <button class="admin-tab" onclick="switchTab('settings')">الإعدادات</button>
+      </div>
+
+      <!-- ORDERS TAB -->
+      <div id="tab-orders" class="admin-tab-content">
+        <div class="webhook-card">
+          <div class="flex-between" style="margin-bottom:1rem">
+            <div class="wh-title">📦 جميع الطلبات</div>
+            <select class="input-field" style="width:auto;padding:0.4rem 0.8rem" onchange="filterOrders(this.value)">
+              <option value="all">جميع الطلبات</option>
+              <option value="done">مكتملة</option>
+              <option value="pending">معلقة</option>
+              <option value="cancel">ملغية</option>
+            </select>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>رقم الطلب</th>
+                  <th>العميل</th>
+                  <th>المنتج</th>
+                  <th>المبلغ</th>
+                  <th>طريقة الدفع</th>
+                  <th>الحالة</th>
+                  <th>التاريخ</th>
+                  <th>إجراء</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRODUCTS MGMT TAB -->
+      <div id="tab-products-mgmt" class="admin-tab-content" style="display:none">
+        <div class="product-form" style="margin-bottom:1rem">
+          <div class="wh-title">➕ إضافة منتج جديد</div>
+          <div class="form-grid">
+            <div class="input-group">
+              <label class="input-label">اسم المنتج</label>
+              <input type="text" class="input-field" id="newProductName" placeholder="مثال: باقة VIP">
+            </div>
+            <div class="input-group">
+              <label class="input-label">السعر (ريال)</label>
+              <input type="number" class="input-field" id="newProductPrice" placeholder="0.00">
+            </div>
+            <div class="input-group">
+              <label class="input-label">الفئة</label>
+              <select class="input-field" id="newProductCategory">
+                <option>عام</option>
+                <option>VIP</option>
+                <option>بوتات</option>
+                <option>خدمات</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label class="input-label">الشارة</label>
+              <select class="input-field" id="newProductBadge">
+                <option value="">بدون</option>
+                <option value="new">جديد</option>
+                <option value="hot">رائج</option>
+                <option value="sale">خصم</option>
+              </select>
+            </div>
+            <div class="input-group" style="grid-column:1/-1">
+              <label class="input-label">الوصف</label>
+              <textarea class="input-field" id="newProductDesc" placeholder="وصف المنتج..."></textarea>
+            </div>
+            <div class="input-group">
+              <label class="input-label">إيموجي المنتج</label>
+              <input type="text" class="input-field" id="newProductEmoji" placeholder="🎮">
+            </div>
+          </div>
+          <button class="action-btn btn-primary" onclick="addProduct()">إضافة المنتج</button>
+        </div>
+
+        <div class="webhook-card">
+          <div class="wh-title">📋 المنتجات الحالية</div>
+          <div id="adminProductsList"></div>
+        </div>
+      </div>
+
+      <!-- WEBHOOK TAB -->
+      <div id="tab-webhook-config" class="admin-tab-content" style="display:none">
+        <div class="webhook-card">
+          <div class="wh-title">🔗 إعداد Discord Webhooks</div>
+          <div class="input-group">
+            <label class="input-label">Webhook الطلبات الجديدة</label>
+            <input type="text" class="input-field" id="whOrders" placeholder="https://discord.com/api/webhooks/1472569701837312114/3e-XXcTeGTn7mCcTC5-hCNPlEUZh8mYjISqkmbEcvl3p10LUZ6nl8rWoBcDLZb2fHo9Z">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Webhook الإيرادات والمبيعات</label>
+            <input type="text" class="input-field" id="whSales" placeholder="https://discord.com/api/webhooks/1472569701837312114/3e-XXcTeGTn7mCcTC5-hCNPlEUZh8mYjISqkmbEcvl3p10LUZ6nl8rWoBcDLZb2fHo9Z">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Webhook التسجيلات الجديدة</label>
+            <input type="text" class="input-field" id="whRegistrations" placeholder="https://discord.com/api/webhooks/1472569701837312114/3e-XXcTeGTn7mCcTC5-hCNPlEUZh8mYjISqkmbEcvl3p10LUZ6nl8rWoBcDLZb2fHo9Z">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Webhook التنبيهات والأخطاء</label>
+            <input type="text" class="input-field" id="whAlerts" placeholder="https://discord.com/api/webhooks/1472569701837312114/3e-XXcTeGTn7mCcTC5-hCNPlEUZh8mYjISqkmbEcvl3p10LUZ6nl8rWoBcDLZb2fHo9Z">
+          </div>
+          <button class="action-btn btn-primary" onclick="saveWebhooks()" style="margin-left:0.5rem">💾 حفظ</button>
+          <button class="action-btn btn-success" onclick="testWebhook()">🧪 اختبار</button>
+        </div>
+
+        <div class="webhook-card">
+          <div class="wh-title">🔔 أحداث الإشعارات</div>
+          <div id="webhookToggles"></div>
+        </div>
+
+        <div class="webhook-card">
+          <div class="wh-title">🤖 إعدادات بوت Discord</div>
+          <div class="input-group">
+            <label class="input-label">Client ID</label>
+            <input type="text" class="input-field" id="discordClientId" placeholder="1481066832650702910">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Client Secret</label>
+            <input type="password" class="input-field" id="discordClientSecret" placeholder="ggSEM8gwpA6MOoHvGT7VCRH0OpKECvXO">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Redirect URI</label>
+            <input type="text" class="input-field" id="discordRedirectUri" placeholder="https://yoursite.com/callback">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Bot Token</label>
+            <input type="password" class="input-field" id="discordBotToken" placeholder="MTQ4MTA2NjgzMjY1MDcwMjkxMA.GDyYL9.hAD_GhVN7hxZMM6KfhSuKa9QkzWOcX5NmD1zH4">
+          </div>
+          <div class="highlight-box">
+            <div style="font-size:0.82rem;color:var(--muted)">
+              ⚠️ تأكد من إضافة الـ Redirect URI في لوحة تحكم Discord Developer Portal<br>
+              ✅ الصلاحيات المطلوبة: <code style="color:var(--accent2)">identify, email, guilds</code>
+            </div>
+          </div>
+          <button class="action-btn btn-primary" onclick="saveBotConfig()">💾 حفظ الإعدادات</button>
+        </div>
+      </div>
+
+      <!-- RULES MGMT TAB -->
+      <div id="tab-rules-mgmt" class="admin-tab-content" style="display:none">
+        <div class="product-form" style="margin-bottom:1rem">
+          <div class="wh-title">➕ إضافة قانون</div>
+          <div class="input-group">
+            <label class="input-label">عنوان القانون</label>
+            <input type="text" class="input-field" id="newRuleTitle" placeholder="مثال: سياسة الاسترداد">
+          </div>
+          <div class="input-group">
+            <label class="input-label">نص القانون</label>
+            <textarea class="input-field" id="newRuleText" placeholder="اكتب القانون هنا..."></textarea>
+          </div>
+          <button class="action-btn btn-primary" onclick="addRule()">إضافة القانون</button>
+        </div>
+        <div class="webhook-card">
+          <div class="wh-title">📋 القوانين الحالية</div>
+          <div id="adminRulesList"></div>
+        </div>
+      </div>
+
+      <!-- PAYMENT MGMT TAB -->
+      <div id="tab-payment-mgmt" class="admin-tab-content" style="display:none">
+        <div class="product-form" style="margin-bottom:1rem">
+          <div class="wh-title">➕ إضافة طريقة دفع</div>
+          <div class="form-grid">
+            <div class="input-group">
+              <label class="input-label">اسم طريقة الدفع</label>
+              <input type="text" class="input-field" id="newPayName" placeholder="مثال: STC Pay">
+            </div>
+            <div class="input-group">
+              <label class="input-label">الأيقونة (إيموجي)</label>
+              <input type="text" class="input-field" id="newPayIcon" placeholder="💳">
+            </div>
+            <div class="input-group">
+              <label class="input-label">الوصف</label>
+              <input type="text" class="input-field" id="newPayDesc" placeholder="دفع سريع وآمن">
+            </div>
+            <div class="input-group">
+              <label class="input-label">الشارة</label>
+              <select class="input-field" id="newPayBadge">
+                <option value="badge-fast">سريع</option>
+                <option value="badge-secure">آمن</option>
+                <option value="badge-popular">الأكثر استخداماً</option>
+              </select>
+            </div>
+          </div>
+          <button class="action-btn btn-primary" onclick="addPayMethod()">إضافة</button>
+        </div>
+        <div class="webhook-card">
+          <div class="wh-title">💳 طرق الدفع الحالية</div>
+          <div id="adminPayList"></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS TAB -->
+      <div id="tab-settings" class="admin-tab-content" style="display:none">
+        <div class="webhook-card">
+          <div class="wh-title">⚙️ إعدادات عامة</div>
+          <div class="input-group">
+            <label class="input-label">اسم المتجر</label>
+            <input type="text" class="input-field" id="storeName" value="STORE">
+          </div>
+          <div class="input-group">
+            <label class="input-label">رابط سيرفر Discord</label>
+            <input type="text" class="input-field" id="discordServer" placeholder="https://discord.gg/...">
+          </div>
+          <div class="input-group">
+            <label class="input-label">رسالة الترحيب</label>
+            <textarea class="input-field" id="welcomeMsg">أهلاً بك في متجرنا! نحن نقدم أفضل المنتجات بأسعار مناسبة.</textarea>
+          </div>
+
+          <div class="divider"></div>
+          <div class="wh-title">🎨 إعدادات الظهور</div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="tl">وضع الصيانة</div>
+              <div class="ts">يوقف المتجر مؤقتاً</div>
+            </div>
+            <div class="toggle" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="tl">عرض العد التنازلي للعروض</div>
+              <div class="ts">يظهر مؤقت في الصفحة الرئيسية</div>
+            </div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="tl">إلزام تسجيل الدخول للشراء</div>
+              <div class="ts">العميل يجب يسجل قبل الشراء</div>
+            </div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+
+          <div class="divider"></div>
+          <div class="input-group">
+            <label class="input-label">الـ IDs المسموح لهم بالوصول للإدارة (Discord IDs)</label>
+            <textarea class="input-field" id="adminIds" placeholder="000000000000000000&#10;111111111111111111"></textarea>
+          </div>
+          <button class="action-btn btn-primary" onclick="saveSettings()">💾 حفظ الإعدادات</button>
+        </div>
+      </div>
+
+    </div><!-- end adminContent -->
+  </div>
+</div>
+
+<!-- BUY MODAL -->
+<div class="modal-overlay" id="buyModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('buyModal')">✕</button>
+    <div class="modal-title" id="modalProductName">شراء المنتج</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;background:var(--bg3);padding:1rem;border-radius:8px">
+      <span style="color:var(--muted);font-size:0.9rem">السعر:</span>
+      <span style="font-family:'Rajdhani';font-size:1.5rem;font-weight:700;color:var(--gold)" id="modalProductPrice">0 ريال</span>
+    </div>
+    <div style="margin-bottom:1rem">
+      <div style="font-size:0.88rem;color:var(--muted);margin-bottom:0.8rem">اختر طريقة الدفع:</div>
+      <div class="payment-grid" id="modalPaymentGrid"></div>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Discord Username أو ID (اختياري)</label>
+      <input type="text" class="input-field" id="buyerDiscord" placeholder="username#0000">
+    </div>
+    <div class="input-group">
+      <label class="input-label">ملاحظات (اختياري)</label>
+      <textarea class="input-field" id="buyerNotes" placeholder="أي تفاصيل إضافية..." style="height:60px"></textarea>
+    </div>
+    <button class="action-btn btn-primary" style="width:100%;padding:0.9rem" onclick="confirmPurchase()">
+      ✅ تأكيد الطلب
+    </button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ===== STATE =====
+let currentUser = null;
+const ADMIN_IDS = ['YOUR_DISCORD_ID_HERE'];
+
+let store = {
+  products: [
+    { id:1, name:'باقة VIP', price:49, desc:'وصول كامل لجميع المميزات الحصرية والدعم الفوري', emoji:'👑', badge:'hot', category:'VIP' },
+    { id:2, name:'بوت ديسكورد', price:89, desc:'بوت مخصص لسيرفرك بكل الأوامر التي تحتاجها', emoji:'🤖', badge:'new', category:'بوتات' },
+    { id:3, name:'باقة أساسية', price:19, desc:'مثالية للمبتدئين مع الميزات الأساسية', emoji:'⚡', badge:'', category:'عام' },
+    { id:4, name:'خدمة برمجة', price:199, desc:'خدمة برمجة مخصصة حسب طلبك', emoji:'💻', badge:'sale', category:'خدمات' },
+    { id:5, name:'باقة سيرفر', price:129, desc:'إعداد وتصميم سيرفر ديسكورد احترافي', emoji:'🎮', badge:'', category:'خدمات' },
+    { id:6, name:'دعم تقني', price:29, desc:'دعم تقني على مدار 24 ساعة لمدة شهر كامل', emoji:'🛡️', badge:'', category:'عام' },
+  ],
+  rules: [
+    { id:1, title:'سياسة الاسترداد', text:'لا يتم استرداد المبالغ بعد تسليم المنتج. يمكن الاسترداد فقط في حالة عدم تسليم المنتج خلال 24 ساعة من وقت الشراء.' },
+    { id:2, title:'قواعد الاستخدام', text:'يُمنع منعاً باتاً إعادة بيع المنتجات أو مشاركتها مع أشخاص آخرين. كل حساب يحق له شراء منتج واحد من نوع واحد.' },
+    { id:3, title:'سلوك العملاء', text:'يجب التعامل مع فريق الدعم باحترام. أي سلوك مسيء سيؤدي إلى حظر دائم من المتجر دون استرداد.' },
+    { id:4, title:'ضمان الجودة', text:'نضمن جودة جميع منتجاتنا. في حال وجود خلل في المنتج، سيتم إصلاحه أو استبداله مجاناً خلال 7 أيام.' },
+    { id:5, title:'الخصوصية', text:'نحترم خصوصيتك ولا نشارك بياناتك مع أي طرف ثالث. جميع معلوماتك محمية ومشفرة.' },
+  ],
+  payMethods: [
+    { id:1, name:'STC Pay', icon:'📱', desc:'دفع فوري عبر تطبيق STC Pay', badge:'badge-popular' },
+    { id:2, name:'مدى', icon:'💳', desc:'جميع بطاقات مدى المصرفية', badge:'badge-secure' },
+    { id:3, name:'PayPal', icon:'🅿️', desc:'دفع دولي عبر PayPal', badge:'badge-fast' },
+    { id:4, name:'تحويل بنكي', icon:'🏦', desc:'تحويل مباشر لحسابنا البنكي', badge:'badge-secure' },
+    { id:5, name:'كريبتو', icon:'₿', desc:'Bitcoin, USDT, ETH', badge:'badge-fast' },
+    { id:6, name:'Apple Pay', icon:'🍎', desc:'دفع سريع عبر Apple Pay', badge:'badge-fast' },
+  ],
+  orders: [
+    { id:'#1001', user:'UserOne', product:'باقة VIP', amount:'49 ر.س', method:'STC Pay', status:'done', date:'2024-01-15' },
+    { id:'#1002', user:'UserTwo', product:'بوت ديسكورد', amount:'89 ر.س', method:'مدى', status:'pending', date:'2024-01-16' },
+    { id:'#1003', user:'UserThree', product:'خدمة برمجة', amount:'199 ر.س', method:'PayPal', status:'done', date:'2024-01-17' },
+    { id:'#1004', user:'UserFour', product:'دعم تقني', amount:'29 ر.س', method:'Apple Pay', status:'cancel', date:'2024-01-18' },
+  ],
+  webhooks: {
+    orders: '', sales: '', registrations: '', alerts: '',
+    events: {
+      newOrder: true, payment: true, newUser: true,
+      orderCancel: false, lowStock: false, systemError: true
+    }
+  },
+  settings: {
+    storeName: 'STORE',
+    discordClientId: '',
+    discordClientSecret: '',
+    discordRedirectUri: '',
+  }
+};
+
+let selectedPayment = null;
+let selectedProduct = null;
+
+// ===== NAVIGATION =====
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+
+  // Highlight nav btn
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(`'${page}'`)) {
+      b.classList.add('active');
+    }
+  });
+
+  if (page === 'admin') renderAdmin();
+}
+
+// ===== RENDER =====
+function renderProducts() {
+  const grid1 = document.getElementById('homeProductsGrid');
+  const grid2 = document.getElementById('allProductsGrid');
+  [grid1, grid2].forEach((grid, i) => {
+    if (!grid) return;
+    const items = i === 0 ? store.products.slice(0, 3) : store.products;
+    grid.innerHTML = items.map(p => productCard(p)).join('');
+  });
+}
+
+function productCard(p) {
+  const badgeMap = { new:'badge-new جديد', hot:'badge-hot رائج', sale:'badge-sale خصم', '':'' };
+  const [cls, label] = p.badge ? badgeMap[p.badge].split(' ') : ['',''];
+  return `
+    <div class="product-card" onclick="openBuyModal(${p.id})">
+      <div class="product-img">
+        ${p.badge ? `<div class="product-badge ${cls}">${label}</div>` : ''}
+        <span style="font-size:3.5rem;position:relative;z-index:1">${p.emoji || '📦'}</span>
+      </div>
+      <div class="product-body">
+        <div class="product-name">${p.name}</div>
+        <div class="product-desc">${p.desc}</div>
+        <div class="product-footer">
+          <div class="product-price">${p.price} <span>ريال</span></div>
+          <button class="buy-btn" onclick="event.stopPropagation();openBuyModal(${p.id})">شراء</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderRules() {
+  document.getElementById('rulesContainer').innerHTML = store.rules.map((r,i) => `
+    <div class="rule-card">
+      <div class="rule-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="rule-title">${r.title}</div>
+      <div class="rule-text">${r.text}</div>
+    </div>`).join('');
+}
+
+function renderPayMethods() {
+  const badgeLabelMap = { 'badge-fast':'سريع', 'badge-secure':'آمن', 'badge-popular':'الأكثر استخداماً' };
+  document.getElementById('payMethodsGrid').innerHTML = store.payMethods.map(m => `
+    <div class="pay-card">
+      <div class="pay-icon">${m.icon}</div>
+      <div class="pay-name">${m.name}</div>
+      <div class="pay-desc">${m.desc}</div>
+      <div class="pay-badge ${m.badge}">${badgeLabelMap[m.badge] || ''}</div>
+    </div>`).join('');
+}
+
+function renderAdmin() {
+  if (!currentUser) {
+    document.getElementById('adminGate').style.display = 'block';
+    document.getElementById('adminContent').style.display = 'none';
+    return;
+  }
+  document.getElementById('adminGate').style.display = 'none';
+  document.getElementById('adminContent').style.display = 'block';
+
+  renderOrdersTable(store.orders);
+  renderAdminProducts();
+  renderAdminRules();
+  renderAdminPayList();
+  renderWebhookToggles();
+}
+
+function renderOrdersTable(orders) {
+  const statusMap = { done:['s-done','مكتمل'], pending:['s-pending','معلق'], cancel:['s-cancel','ملغي'] };
+  document.getElementById('ordersTableBody').innerHTML = orders.map(o => {
+    const [cls,lbl] = statusMap[o.status];
+    return `<tr>
+      <td style="font-family:'Rajdhani';color:var(--accent)">${o.id}</td>
+      <td>${o.user}</td>
+      <td>${o.product}</td>
+      <td style="color:var(--gold);font-weight:700">${o.amount}</td>
+      <td>${o.method}</td>
+      <td><span class="status-badge ${cls}">${lbl}</span></td>
+      <td style="color:var(--muted);font-size:0.82rem">${o.date}</td>
+      <td>
+        <div class="flex-gap">
+          ${o.status === 'pending' ? `<button class="action-btn btn-success" style="padding:0.3rem 0.7rem;font-size:0.78rem" onclick="updateOrder('${o.id}','done')">✓</button>` : ''}
+          ${o.status !== 'cancel' ? `<button class="action-btn btn-danger" style="padding:0.3rem 0.7rem;font-size:0.78rem" onclick="updateOrder('${o.id}','cancel')">✕</button>` : ''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAdminProducts() {
+  document.getElementById('adminProductsList').innerHTML = store.products.map(p => `
+    <div class="toggle-row">
+      <div style="display:flex;align-items:center;gap:0.8rem">
+        <span style="font-size:1.5rem">${p.emoji}</span>
+        <div>
+          <div style="font-weight:600;font-size:0.9rem">${p.name}</div>
+          <div style="font-size:0.78rem;color:var(--muted)">${p.price} ريال • ${p.category}</div>
+        </div>
+      </div>
+      <button class="action-btn btn-danger" style="padding:0.3rem 0.8rem;font-size:0.8rem" onclick="deleteProduct(${p.id})">حذف</button>
+    </div>`).join('');
+}
+
+function renderAdminRules() {
+  document.getElementById('adminRulesList').innerHTML = store.rules.map(r => `
+    <div class="toggle-row">
+      <div>
+        <div style="font-weight:600;font-size:0.9rem">${r.title}</div>
+        <div style="font-size:0.78rem;color:var(--muted)">${r.text.substring(0,60)}...</div>
+      </div>
+      <button class="action-btn btn-danger" style="padding:0.3rem 0.8rem;font-size:0.8rem" onclick="deleteRule(${r.id})">حذف</button>
+    </div>`).join('');
+}
+
+function renderAdminPayList() {
+  document.getElementById('adminPayList').innerHTML = store.payMethods.map(m => `
+    <div class="toggle-row">
+      <div style="display:flex;align-items:center;gap:0.8rem">
+        <span style="font-size:1.5rem">${m.icon}</span>
+        <div>
+          <div style="font-weight:600;font-size:0.9rem">${m.name}</div>
+          <div style="font-size:0.78rem;color:var(--muted)">${m.desc}</div>
+        </div>
+      </div>
+      <button class="action-btn btn-danger" style="padding:0.3rem 0.8rem;font-size:0.8rem" onclick="deletePayMethod(${m.id})">حذف</button>
+    </div>`).join('');
+}
+
+function renderWebhookToggles() {
+  const events = [
+    { key:'newOrder', label:'طلب جديد', sub:'يُرسل عند كل عملية شراء جديدة' },
+    { key:'payment', label:'تأكيد دفع', sub:'يُرسل عند اكتمال الدفع' },
+    { key:'newUser', label:'مستخدم جديد', sub:'يُرسل عند تسجيل حساب جديد' },
+    { key:'orderCancel', label:'إلغاء طلب', sub:'يُرسل عند إلغاء أي طلب' },
+    { key:'systemError', label:'خطأ في النظام', sub:'تنبيهات الأعطال' },
+  ];
+  document.getElementById('webhookToggles').innerHTML = events.map(e => `
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <div class="tl">${e.label}</div>
+        <div class="ts">${e.sub}</div>
+      </div>
+      <div class="toggle ${store.webhooks.events[e.key] ? 'on' : ''}" onclick="toggleWebhookEvent('${e.key}',this)"></div>
+    </div>`).join('');
+}
+
+// ===== MODALS =====
+function openBuyModal(productId) {
+  if (!currentUser) {
+    showToast('يجب تسجيل الدخول أولاً', 'error');
+    setTimeout(() => showPage('login'), 1000);
+    return;
+  }
+  selectedProduct = store.products.find(p => p.id === productId);
+  if (!selectedProduct) return;
+  document.getElementById('modalProductName').textContent = 'شراء: ' + selectedProduct.name;
+  document.getElementById('modalProductPrice').textContent = selectedProduct.price + ' ريال';
+  document.getElementById('modalPaymentGrid').innerHTML = store.payMethods.map(m => `
+    <div class="payment-option" onclick="selectPayment('${m.name}',this)">
+      <div class="icon">${m.icon}</div>
+      <div class="label">${m.name}</div>
+    </div>`).join('');
+  selectedPayment = null;
+  document.getElementById('buyerDiscord').value = currentUser ? currentUser.username : '';
+  document.getElementById('buyModal').classList.add('open');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function selectPayment(name, el) {
+  selectedPayment = name;
+  document.querySelectorAll('.payment-option').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function confirmPurchase() {
+  if (!selectedPayment) { showToast('اختر طريقة دفع', 'error'); return; }
+  const order = {
+    id: '#' + (1000 + store.orders.length + 1),
+    user: currentUser.username,
+    product: selectedProduct.name,
+    amount: selectedProduct.price + ' ر.س',
+    method: selectedPayment,
+    status: 'pending',
+    date: new Date().toISOString().split('T')[0]
+  };
+  store.orders.unshift(order);
+  sendWebhook('newOrder', order);
+  closeModal('buyModal');
+  showToast('✅ تم إرسال طلبك بنجاح! سيتم التواصل معك قريباً', 'success');
+}
+
+// ===== ADMIN ACTIONS =====
+function switchTab(tab) {
+  document.querySelectorAll('.admin-tab-content').forEach(t => t.style.display = 'none');
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).style.display = 'block';
+  event.target.classList.add('active');
+}
+
+function addProduct() {
+  const name = document.getElementById('newProductName').value.trim();
+  const price = parseFloat(document.getElementById('newProductPrice').value);
+  const desc = document.getElementById('newProductDesc').value.trim();
+  const emoji = document.getElementById('newProductEmoji').value.trim() || '📦';
+  const badge = document.getElementById('newProductBadge').value;
+  const category = document.getElementById('newProductCategory').value;
+  if (!name || !price) { showToast('يرجى ملء جميع الحقول المطلوبة', 'error'); return; }
+  store.products.push({ id: Date.now(), name, price, desc, emoji, badge, category });
+  renderProducts();
+  renderAdminProducts();
+  document.getElementById('newProductName').value = '';
+  document.getElementById('newProductPrice').value = '';
+  document.getElementById('newProductDesc').value = '';
+  document.getElementById('newProductEmoji').value = '';
+  showToast('✅ تم إضافة المنتج', 'success');
+}
+
+function deleteProduct(id) {
+  store.products = store.products.filter(p => p.id !== id);
+  renderProducts();
+  renderAdminProducts();
+  showToast('🗑️ تم حذف المنتج', 'info');
+}
+
+function addRule() {
+  const title = document.getElementById('newRuleTitle').value.trim();
+  const text = document.getElementById('newRuleText').value.trim();
+  if (!title || !text) { showToast('يرجى ملء جميع الحقول', 'error'); return; }
+  store.rules.push({ id: Date.now(), title, text });
+  renderRules();
+  renderAdminRules();
+  document.getElementById('newRuleTitle').value = '';
+  document.getElementById('newRuleText').value = '';
+  showToast('✅ تم إضافة القانون', 'success');
+}
+
+function deleteRule(id) {
+  store.rules = store.rules.filter(r => r.id !== id);
+  renderRules();
+  renderAdminRules();
+  showToast('🗑️ تم حذف القانون', 'info');
+}
+
+function addPayMethod() {
+  const name = document.getElementById('newPayName').value.trim();
+  const icon = document.getElementById('newPayIcon').value.trim() || '💳';
+  const desc = document.getElementById('newPayDesc').value.trim();
+  const badge = document.getElementById('newPayBadge').value;
+  if (!name) { showToast('يرجى إدخال اسم طريقة الدفع', 'error'); return; }
+  store.payMethods.push({ id: Date.now(), name, icon, desc, badge });
+  renderPayMethods();
+  renderAdminPayList();
+  document.getElementById('newPayName').value = '';
+  document.getElementById('newPayIcon').value = '';
+  document.getElementById('newPayDesc').value = '';
+  showToast('✅ تم إضافة طريقة الدفع', 'success');
+}
+
+function deletePayMethod(id) {
+  store.payMethods = store.payMethods.filter(m => m.id !== id);
+  renderPayMethods();
+  renderAdminPayList();
+  showToast('🗑️ تم الحذف', 'info');
+}
+
+function filterOrders(status) {
+  const filtered = status === 'all' ? store.orders : store.orders.filter(o => o.status === status);
+  renderOrdersTable(filtered);
+}
+
+function updateOrder(id, status) {
+  const o = store.orders.find(o => o.id === id);
+  if (o) { o.status = status; renderOrdersTable(store.orders); showToast('✅ تم تحديث حالة الطلب', 'success'); }
+}
+
+function toggleWebhookEvent(key, el) {
+  el.classList.toggle('on');
+  store.webhooks.events[key] = el.classList.contains('on');
+}
+
+function saveWebhooks() {
+  store.webhooks.orders = document.getElementById('whOrders').value;
+  store.webhooks.sales = document.getElementById('whSales').value;
+  store.webhooks.registrations = document.getElementById('whRegistrations').value;
+  store.webhooks.alerts = document.getElementById('whAlerts').value;
+  showToast('✅ تم حفظ إعدادات Webhook', 'success');
+}
+
+function saveBotConfig() {
+  store.settings.discordClientId = document.getElementById('discordClientId').value;
+  store.settings.discordClientSecret = document.getElementById('discordClientSecret').value;
+  store.settings.discordRedirectUri = document.getElementById('discordRedirectUri').value;
+  showToast('✅ تم حفظ إعدادات البوت', 'success');
+}
+
+function saveSettings() {
+  showToast('✅ تم حفظ الإعدادات', 'success');
+}
+
+// ===== WEBHOOK =====
+async function sendWebhook(event, data) {
+  const url = event === 'newOrder' ? store.webhooks.orders : store.webhooks.alerts;
+  if (!url) return;
+  const embed = {
+    title: event === 'newOrder' ? '🛒 طلب جديد!' : '🔔 إشعار',
+    color: event === 'newOrder' ? 0x5865F2 : 0xf0b429,
+    fields: [
+      { name: 'المنتج', value: data.product || '-', inline: true },
+      { name: 'المبلغ', value: data.amount || '-', inline: true },
+      { name: 'طريقة الدفع', value: data.method || '-', inline: true },
+      { name: 'العميل', value: data.user || '-', inline: true },
+      { name: 'رقم الطلب', value: data.id || '-', inline: true },
+    ],
+    timestamp: new Date().toISOString(),
+    footer: { text: 'STORE Bot' }
+  };
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ embeds: [embed] })
+    });
+  } catch(e) { console.error('Webhook error:', e); }
+}
+
+async function testWebhook() {
+  await sendWebhook('newOrder', {
+    id: '#TEST', product: 'اختبار', amount: '0 ر.س', method: 'Test', user: 'TestUser'
+  });
+  showToast('📡 تم إرسال Webhook تجريبي', 'info');
+}
+
+// ===== DISCORD AUTH =====
+function loginWithDiscord() {
+  const clientId = store.settings.discordClientId || 'YOUR_CLIENT_ID';
+  const redirect = store.settings.discordRedirectUri || window.location.origin + window.location.pathname;
+  const scope = 'identify email guilds';
+  const url = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirect)}&response_type=token&scope=${encodeURIComponent(scope)}`;
+
+  // Demo: simulate login if no client ID configured
+  if (clientId === 'YOUR_CLIENT_ID') {
+    simulateLogin();
+    return;
+  }
+  window.location.href = url;
+}
+
+function simulateLogin() {
+  // Demo login for preview
+  currentUser = {
+    id: '123456789012345678',
+    username: 'Demo User',
+    avatar: null,
+    isAdmin: true
+  };
+  updateAuthUI();
+  showPage('home');
+  showToast('✅ تم تسجيل الدخول (وضع العرض)', 'success');
+  sendWebhook('newUser', { user: currentUser.username });
+}
+
+function handleDiscordCallback() {
+  const hash = window.location.hash;
+  if (!hash) return;
+  const params = new URLSearchParams(hash.substring(1));
+  const token = params.get('access_token');
+  if (!token) return;
+  fetch('https://discord.com/api/users/@me', {
+    headers: { Authorization: 'Bearer ' + token }
+  }).then(r => r.json()).then(user => {
+    currentUser = {
+      id: user.id,
+      username: user.username,
+      avatar: user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : null,
+      isAdmin: ADMIN_IDS.includes(user.id)
+    };
+    updateAuthUI();
+    showPage('home');
+    showToast('✅ مرحباً ' + user.username, 'success');
+    history.replaceState(null, '', window.location.pathname);
+  }).catch(e => showToast('فشل تسجيل الدخول', 'error'));
+}
+
+function updateAuthUI() {
+  const authArea = document.getElementById('authArea');
+  const adminBtn = document.getElementById('adminNavBtn');
+  if (currentUser) {
+    const avatarHtml = currentUser.avatar
+      ? `<img class="user-avatar" src="${currentUser.avatar}" alt="">`
+      : `<div class="user-avatar" style="background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:0.7rem">${currentUser.username[0]}</div>`;
+    authArea.innerHTML = `
+      <div class="user-badge">
+        ${avatarHtml}
+        <span class="user-name">${currentUser.username}</span>
+        ${currentUser.isAdmin ? '<span style="font-size:0.7rem;color:var(--gold)">⚙️ Admin</span>' : ''}
+        <button style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.8rem" onclick="logout()">خروج</button>
+      </div>`;
+    if (currentUser.isAdmin) adminBtn.style.display = 'block';
+  } else {
+    authArea.innerHTML = `<button class="login-btn" onclick="showPage('login')">
+      <svg class="discord-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.082.11 18.105.127 18.12a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+      تسجيل الدخول بـ Discord
+    </button>`;
+    adminBtn.style.display = 'none';
+  }
+}
+
+function logout() {
+  currentUser = null;
+  updateAuthUI();
+  showPage('home');
+  showToast('تم تسجيل الخروج', 'info');
+}
+
+// ===== TOAST =====
+function showToast(msg, type = 'info') {
+  const icons = { success:'✅', error:'❌', info:'ℹ️' };
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${icons[type]}</span> ${msg}`;
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+
+// ===== COUNTERS =====
+function animateCounter(id, target, suffix = '') {
+  let current = 0;
+  const step = Math.ceil(target / 60);
+  const el = document.getElementById(id);
+  const timer = setInterval(() => {
+    current = Math.min(current + step, target);
+    el.textContent = current.toLocaleString() + suffix;
+    if (current >= target) clearInterval(timer);
+  }, 30);
+}
+
+// ===== INIT =====
+function init() {
+  handleDiscordCallback();
+  renderProducts();
+  renderRules();
+  renderPayMethods();
+  animateCounter('counter1', 0);
+  animateCounter('counter2', store.products.length);
+  animateCounter('counter3', 0);
+}
+
+// Click outside modal
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+
+const express = require("express")
+const session = require("express-session")
+const fetch = require("node-fetch")
+const fs = require("fs")
+const path = require("path")
+
+const app = express()
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
+app.use(session({
+    secret: "realtown_store_secret",
+    resave: false,
+    saveUninitialized: true
+}))
+
+/* =========================
+   إعدادات المتجر
+========================= */
+
+const CLIENT_ID = "1481066832650702910"
+const CLIENT_SECRET = "ggSEM8gwpA6MOoHvGT7VCRH0OpKECvXO"
+const REDIRECT_URI = "http://localhost:3000/auth/discord/callback"
+
+const WEBHOOK = "https://discord.com/api/webhooks/1472569701837312114/3e-XXcTeGTn7mCcTC5-hCNPlEUZh8mYjISqkmbEcvl3p10LUZ6nl8rWoBcDLZb2fHo9Z"
+
+/* =========================
+   ملفات التخزين
+========================= */
+
+const DATA = path.join(__dirname, "store.json")
+
+if (!fs.existsSync(DATA)) {
+
+    fs.writeFileSync(DATA, JSON.stringify({
+        users: {},
+        carts: {},
+        purchases: []
+    }, null, 2))
+
+}
+
+function readData() {
+    return JSON.parse(fs.readFileSync(DATA))
+}
+
+function saveData(data) {
+    fs.writeFileSync(DATA, JSON.stringify(data, null, 2))
+}
+
+/* =========================
+   تسجيل دخول دسكورد
+========================= */
+
+app.get("/auth/discord", (req, res) => {
+
+    const url =
+        "https://discord.com/api/oauth2/authorize" +
+        "?client_id=" + CLIENT_ID +
+        "&redirect_uri=" + encodeURIComponent(REDIRECT_URI) +
+        "&response_type=code" +
+        "&scope=identify"
+
+    res.redirect(url)
+
+})
+
+/* =========================
+   رد تسجيل الدخول
+========================= */
+
+app.get("/auth/discord/callback", async (req, res) => {
+
+    const code = req.query.code
+
+    const params = new URLSearchParams()
+
+    params.append("client_id", CLIENT_ID)
+    params.append("client_secret", CLIENT_SECRET)
+    params.append("grant_type", "authorization_code")
+    params.append("code", code)
+    params.append("redirect_uri", REDIRECT_URI)
+
+    const tokenRes = await fetch(
+        "https://discord.com/api/oauth2/token",
+        {
+            method: "POST",
+            body: params,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        }
+    )
+
+    const token = await tokenRes.json()
+
+    const userRes = await fetch(
+        "https://discord.com/api/users/@me",
+        {
+            headers: {
+                authorization: "Bearer " + token.access_token
+            }
+        }
+    )
+
+    const user = await userRes.json()
+
+    req.session.user = user
+
+    const data = readData()
+
+    if (!data.users[user.id]) {
+
+        data.users[user.id] = {
+            id: user.id,
+            username: user.username
+        }
+
+        saveData(data)
+
+    }
+
+    res.redirect("/")
+})
+
+/* =========================
+   تسجيل خروج
+========================= */
+
+app.get("/logout", (req, res) => {
+
+    req.session.destroy()
+    res.redirect("/")
+
+})
+
+/* =========================
+   حفظ السلة
+========================= */
+
+app.post("/save-cart", (req, res) => {
+
+    if (!req.session.user)
+        return res.json({ error: "login required" })
+
+    const userId = req.session.user.id
+    const cart = req.body.cart
+
+    const data = readData()
+
+    data.carts[userId] = cart
+
+    saveData(data)
+
+    res.json({ success: true })
+
+})
+
+/* =========================
+   جلب السلة
+========================= */
+
+app.get("/cart", (req, res) => {
+
+    if (!req.session.user)
+        return res.json([])
+
+    const data = readData()
+
+    const cart = data.carts[req.session.user.id] || []
+
+    res.json(cart)
+
+})
+
+/* =========================
+   حفظ الشراء
+========================= */
+
+app.post("/purchase", async (req, res) => {
+
+    if (!req.session.user)
+        return res.json({ error: "login required" })
+
+    const product = req.body.product
+    const price = req.body.price
+
+    const data = readData()
+
+    const order = {
+
+        id: "ORD-" + Date.now(),
+        user: req.session.user.username,
+        userId: req.session.user.id,
+        product: product,
+        price: price,
+        date: new Date().toISOString()
+
+    }
+
+    data.purchases.push(order)
+
+    data.carts[req.session.user.id] = []
+
+    saveData(data)
+
+    /* =========================
+       إرسال للدسكورد
+    ========================= */
+
+    await fetch(WEBHOOK, {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+
+            embeds: [
+                {
+                    title: "🛒 عملية شراء جديدة",
+                    color: 5763719,
+                    fields: [
+                        {
+                            name: "👤 المستخدم",
+                            value: order.user
+                        },
+                        {
+                            name: "📦 المنتج",
+                            value: order.product
+                        },
+                        {
+                            name: "💰 السعر",
+                            value: order.price + "$"
+                        }
+                    ]
+                }
+            ]
+
+        })
+
+    })
+
+    res.json({
+        success: true,
+        order: order
+    })
+
+})
+
+/* =========================
+   لوحة الادارة
+========================= */
+
+app.get("/admin/orders", (req, res) => {
+
+    const data = readData()
+
+    res.json(data.purchases)
+
+})
+
+/* =========================
+   تشغيل السيرفر
+========================= */
+
+app.listen(3000, () => {
+
+    console.log("RealTown Store Running")
+
+})
+
+init();
+</script>
+</body>
+</html>
